@@ -84,12 +84,25 @@ rightToLeftImage.onload = () => {
   if (imagesLoaded === 3) generateRectangles();
 };
 
+// Función para guardar la puntuación más alta en el almacenamiento local
+function saveHighScore() {
+    if (score > localStorage.getItem("highScore")) {
+      localStorage.setItem("highScore", score);
+    }
+  }
+  
+  // Función para obtener la puntuación más alta del almacenamiento local
+  function getHighScore() {
+    return localStorage.getItem("highScore") || 0;
+  }
+
 // Al final del evento de click, si ya no quedan rectángulos, llamar a una función para generar nuevos
 canvas.addEventListener("click", () => {
   const initialLength = rectangles.length;
   rectangles = rectangles.filter((rectangle) => !isMouseInside(mouseX, mouseY, rectangle));
   const removedCount = initialLength - rectangles.length;
   score += removedCount; // Actualizar el score
+  saveHighScore(); // Guardar la puntuación más alta
 
   // Verificar si todos los rectángulos desaparecieron
   if (rectangles.length === 0) {
@@ -131,7 +144,8 @@ function updateRectangles() {
 
   // Dibujar el panel del score
   drawScore();
-  drawScore2();
+  drawLevel();
+  drawHighscore();
 }
 
 function drawScore() {
@@ -158,10 +172,10 @@ function drawScore() {
   ctx.fillText("Score: " + score, scorePanelX + scorePanelWidth / 2, scorePanelY + scorePanelHeight / 2);
 }
 
-function drawScore2() {
+function drawLevel() {
     const scorePanelWidth = 100;
     const scorePanelHeight = 50;
-    const scorePanelX = canvas.width - scorePanelWidth - 750;
+    const scorePanelX = canvas.width - scorePanelWidth - 745;
     const scorePanelY = 10;
   
     ctx.fillStyle = "black";
@@ -181,6 +195,30 @@ function drawScore2() {
     ctx.font = "20px Arial";
     ctx.fillText("Level: " + level, scorePanelX + scorePanelWidth / 2, scorePanelY + scorePanelHeight / 2);
   }
+
+  function drawHighscore() {
+    const scorePanelWidth = 150;
+    const scorePanelHeight = 50;
+    const scorePanelX = canvas.width - scorePanelWidth - 695;
+    const scorePanelY = canvas.height - scorePanelHeight - 10;
+  
+    ctx.fillStyle = "black";
+    ctx.fillRect(scorePanelX, scorePanelY, scorePanelWidth, scorePanelHeight);
+  
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(
+      scorePanelX,
+      scorePanelY,
+      scorePanelWidth,
+      scorePanelHeight
+    );
+  
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "20px Arial";
+    ctx.fillText("Highscore: " + getHighScore(), scorePanelX + scorePanelWidth / 2, scorePanelY + scorePanelHeight / 2);
+  }  
 
 // Iniciar la animación cuando todas las imágenes estén cargadas
 if (imagesLoaded === 3) {
