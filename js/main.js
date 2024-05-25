@@ -1,6 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let mouseX = 0, mouseY = 0;
+let score = 0;  // Variable para el score
 
 // Ajustar dimensiones del canvas
 canvas.height = window.innerHeight / 1.5;
@@ -17,12 +18,15 @@ canvas.addEventListener("mousemove", e => {
 });
 
 canvas.addEventListener("click", () => {
+    const initialLength = rectangles.length;
     rectangles = rectangles.filter(rectangle => !isMouseInside(mouseX, mouseY, rectangle));
+    const removedCount = initialLength - rectangles.length;
+    score += removedCount;  // Actualizar el score
 });
 
 class Rectangle {
-    constructor(x, y, width, height, color, text, speedX, image) {
-        Object.assign(this, { posX: x, posY: y, width, height, color, text, dx: speedX, image });
+    constructor(x, y, width, height, color, speedX, image) {
+        Object.assign(this, { posX: x, posY: y, width, height, color, dx: speedX, image });
     }
 
     draw(context) {
@@ -34,23 +38,12 @@ class Rectangle {
             context.rect(this.posX, this.posY, this.width, this.height);
             context.stroke();
         }
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.font = "20px Arial";
-        context.fillText(this.text, this.posX + this.width / 2, this.posY + this.height / 2);
         context.closePath();
     }
 
     update(context) {
         this.draw(context);
         this.posX += this.dx;
-
-        // Si el rectángulo sale del canvas, lo reubicamos al lado opuesto
-        if (this.dx > 0 && this.posX > canvas.width) {
-            this.posX = -this.width;
-        } else if (this.dx < 0 && this.posX + this.width < 0) {
-            this.posX = canvas.width;
-        }
     }
 }
 
@@ -65,14 +58,14 @@ const rectangleHeight = 50;  // Altura fija de los rectángulos
 
 // Cargar la imagen de fondo
 const backgroundImage = new Image();
-backgroundImage.src = "assets/img/fondo.png";  // Reemplaza 'URL_DE_LA_IMAGEN' con la URL de tu imagen
+backgroundImage.src = "assets/img/fondo.png";
 
 // Cargar las imágenes para los rectángulos
 const leftToRightImage = new Image();
-leftToRightImage.src = "assets/img/duck1.png";  // Reemplaza 'URL_DE_LA_IMAGEN_LEFT_TO_RIGHT' con la URL de la imagen del rectángulo que va de izquierda a derecha
+leftToRightImage.src = "assets/img/duck1.png";
 
 const rightToLeftImage = new Image();
-rightToLeftImage.src = "assets/img/duck2.png";  // Reemplaza 'URL_DE_LA_IMAGEN_RIGHT_TO_LEFT' con la URL de la imagen del rectángulo que va de derecha a izquierda
+rightToLeftImage.src = "assets/img/duck2.png";
 
 // Esperar a que las imágenes se carguen antes de iniciar la animación
 let imagesLoaded = 0;
@@ -95,7 +88,7 @@ for (let i = 0; i < 6; i++) {
     const randomX = direction === 1 ? -rectangleWidth : canvas.width;
     const image = direction === 1 ? leftToRightImage : rightToLeftImage;
 
-    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), direction * (Math.random() * 2 + 1), image));
+    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", direction * (Math.random() * 2 + 1), image));
 }
 
 function updateRectangles() {
@@ -105,7 +98,37 @@ function updateRectangles() {
     // Dibujar la imagen de fondo
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-    for (const rectangle of rectangles) {
+    // Actualizar y filtrar los rectángulos
+    rectangles = rectangles.filter(rectangle => {
         rectangle.update(ctx);
-    }
+        // Verificar si el rectángulo sigue dentro del canvas
+        return rectangle.posX + rectangle.width > 0 && rectangle.posX < canvas.width;
+    });
+
+    // Dibujar el panel del score
+    drawScore();
+}
+
+function drawScore() {
+    const scorePanelWidth = 100;
+    const scorePanelHeight = 50;
+    const scorePanelX = canvas.width - scorePanelWidth - 10;
+    const scorePanelY = 10;
+    
+    ctx.fillStyle = "black";
+    ctx.fillRect(scorePanelX, scorePanelY, scorePanelWidth, scorePanelHeight);
+    
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(scorePanelX, scorePanelY, scorePanelWidth, scorePanelHeight);
+    
+    ctx.fillStyle = "yellow";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "20px Arial";
+    ctx.fillText("Score: " + score, scorePanelX + scorePanelWidth / 2, scorePanelY + scorePanelHeight / 2);
+}
+
+// Iniciar la animación cuando todas las imágenes estén cargadas
+if (imagesLoaded === 3) {
+    updateRectangles();
 }
