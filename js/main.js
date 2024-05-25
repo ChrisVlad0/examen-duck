@@ -19,8 +19,8 @@ canvas.addEventListener("click", () => {
 });
 
 class Rectangle {
-    constructor(x, y, width, height, color, text, speedX, speedY) {
-        Object.assign(this, { posX: x, posY: y, width, height, color, originalColor: color, text, dx: speedX, dy: speedY });
+    constructor(x, y, width, height, color, text, speedX) {
+        Object.assign(this, { posX: x, posY: y, width, height, color, originalColor: color, text, dx: speedX });
     }
 
     draw(context) {
@@ -36,16 +36,15 @@ class Rectangle {
         context.closePath();
     }
 
-    update(context, rectangles) {
+    update(context) {
         this.draw(context);
         this.posX += this.dx;
-        this.posY -= this.dy;
 
-        for (const rectangle of rectangles) {
-            if (rectangle !== this && isColliding(this, rectangle)) {
-                [this.dx, this.dy, rectangle.dx, rectangle.dy] = [rectangle.dx, rectangle.dy, this.dx, this.dy];
-                [this.color, rectangle.color] = ["red", "red"];
-            }
+        // Si el rectángulo sale del canvas, lo reubicamos al lado opuesto
+        if (this.dx > 0 && this.posX > canvas.width) {
+            this.posX = -this.width;
+        } else if (this.dx < 0 && this.posX + this.width < 0) {
+            this.posX = canvas.width;
         }
     }
 }
@@ -55,25 +54,16 @@ function isMouseInside(mouseX, mouseY, rectangle) {
            mouseY > rectangle.posY && mouseY < rectangle.posY + rectangle.height;
 }
 
-function isColliding(rect1, rect2) {
-    return !(rect2.posX > rect1.posX + rect1.width ||
-             rect2.posX + rect2.width < rect1.posX ||
-             rect2.posY > rect1.posY + rect1.height ||
-             rect2.posY + rect2.height < rect1.posY);
-}
-
 let rectangles = [];
 const rectangleWidth = 100;  // Ancho fijo de los rectángulos
 const rectangleHeight = 50;  // Altura fija de los rectángulos
 
 for (let i = 0; i < 6; i++) {
-    let randomX, randomY;
-    do {
-        randomX = Math.random() * (canvas.width - rectangleWidth);
-        randomY = canvas.height - rectangleHeight;
-    } while (rectangles.some(rectangle => isColliding({posX: randomX, posY: randomY, width: rectangleWidth, height: rectangleHeight}, rectangle)));
+    const randomY = Math.random() * (canvas.height / 4);  // Generar en el cuarto superior del canvas
+    const direction = i % 2 === 0 ? 1 : -1;  // Alternar direcciones
+    const randomX = direction === 1 ? -rectangleWidth : canvas.width;
 
-    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), (Math.random() - 0.5) * 2, Math.random() * 2 + 1));
+    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), direction * (Math.random() * 2 + 1)));
 }
 
 function updateRectangles() {
@@ -81,13 +71,7 @@ function updateRectangles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (const rectangle of rectangles) {
-        rectangle.update(ctx, rectangles);
-    }
-
-    for (const rectangle of rectangles) {
-        if (rectangle.color === "red" && !rectangles.some(other => rectangle !== other && isColliding(rectangle, other))) {
-            rectangle.color = rectangle.originalColor;
-        }
+        rectangle.update(ctx);
     }
 }
 
