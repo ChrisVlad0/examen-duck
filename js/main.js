@@ -63,17 +63,17 @@ function isColliding(rect1, rect2) {
 }
 
 let rectangles = [];
+const rectangleWidth = 100;  // Ancho fijo de los rectángulos
+const rectangleHeight = 50;  // Altura fija de los rectángulos
 
 for (let i = 0; i < 6; i++) {
-    let randomWidth, randomHeight, randomX, randomY;
+    let randomX, randomY;
     do {
-        randomWidth = Math.floor(Math.random() * 100 + 30);
-        randomHeight = Math.floor(Math.random() * 50 + 20); // Altura menor que el ancho
-        randomX = Math.random() * (canvas.width - randomWidth);
-        randomY = canvas.height - randomHeight;
-    } while (rectangles.some(rectangle => isColliding({posX: randomX, posY: randomY, width: randomWidth, height: randomHeight}, rectangle)));
+        randomX = Math.random() * (canvas.width - rectangleWidth);
+        randomY = canvas.height - rectangleHeight;
+    } while (rectangles.some(rectangle => isColliding({posX: randomX, posY: randomY, width: rectangleWidth, height: rectangleHeight}, rectangle)));
 
-    rectangles.push(new Rectangle(randomX, randomY, randomWidth, randomHeight, "blue", (i + 1).toString(), (Math.random() - 0.5) * 2, Math.random() * 2 + 1));
+    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), (Math.random() - 0.5) * 2, Math.random() * 2 + 1));
 }
 
 function updateRectangles() {
