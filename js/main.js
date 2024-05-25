@@ -5,7 +5,6 @@ let mouseX = 0, mouseY = 0;
 // Ajustar dimensiones del canvas
 canvas.height = window.innerHeight / 1.5;
 canvas.width = window.innerWidth / 1.5;
-canvas.style.background = "#ff8";
 
 // Obtener coordenadas del mouse
 canvas.addEventListener("mousemove", e => {
@@ -66,13 +65,22 @@ for (let i = 0; i < 6; i++) {
     rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), direction * (Math.random() * 2 + 1)));
 }
 
+// Cargar la imagen de fondo
+const backgroundImage = new Image();
+backgroundImage.src = "assets/img/fondo.png";
+
+backgroundImage.onload = function() {
+    updateRectangles();
+};
+
 function updateRectangles() {
     requestAnimationFrame(updateRectangles);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Dibujar la imagen de fondo
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
     for (const rectangle of rectangles) {
         rectangle.update(ctx);
     }
 }
-
-updateRectangles();
