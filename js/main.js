@@ -108,6 +108,10 @@ canvas.addEventListener("click", () => {
     rectanglesEliminated += removedCount; // Actualizar el conteo de rectángulos eliminados
     saveHighScore(); // Guardar la puntuación más alta
 
+    // Reproducir el sonido al hacer clic en el canvas
+    const clickSound = document.getElementById("Sound");
+    clickSound.play();
+
     // Verificar si todos los rectángulos desaparecieron
     if (rectangles.length === 0) {
 
