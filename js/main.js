@@ -6,6 +6,9 @@ let mouseX = 0, mouseY = 0;
 canvas.height = window.innerHeight / 1.5;
 canvas.width = window.innerWidth / 1.5;
 
+// Establecer el cursor personalizado desde JavaScript
+canvas.style.cursor = 'url("assets/img/shot-gun.png"), auto';
+
 // Obtener coordenadas del mouse
 canvas.addEventListener("mousemove", e => {
     const rect = canvas.getBoundingClientRect();
@@ -62,14 +65,14 @@ const rectangleHeight = 50;  // Altura fija de los rectángulos
 
 // Cargar la imagen de fondo
 const backgroundImage = new Image();
-backgroundImage.src = "assets/img/fondo.png";
+backgroundImage.src = "assets/img/fondo.png";  // Reemplaza 'URL_DE_LA_IMAGEN' con la URL de tu imagen
 
 // Cargar las imágenes para los rectángulos
 const leftToRightImage = new Image();
-leftToRightImage.src = "assets/img/duck1.png";
+leftToRightImage.src = "assets/img/duck1.png";  // Reemplaza 'URL_DE_LA_IMAGEN_LEFT_TO_RIGHT' con la URL de la imagen del rectángulo que va de izquierda a derecha
 
 const rightToLeftImage = new Image();
-rightToLeftImage.src = "assets/img/duck2.png";
+rightToLeftImage.src = "assets/img/duck2.png";  // Reemplaza 'URL_DE_LA_IMAGEN_RIGHT_TO_LEFT' con la URL de la imagen del rectángulo que va de derecha a izquierda
 
 // Esperar a que las imágenes se carguen antes de iniciar la animación
 let imagesLoaded = 0;
