@@ -18,20 +18,23 @@ canvas.addEventListener("click", () => {
 });
 
 class Rectangle {
-    constructor(x, y, width, height, color, text, speedX) {
-        Object.assign(this, { posX: x, posY: y, width, height, color, originalColor: color, text, dx: speedX });
+    constructor(x, y, width, height, color, text, speedX, image) {
+        Object.assign(this, { posX: x, posY: y, width, height, color, text, dx: speedX, image });
     }
 
     draw(context) {
         context.beginPath();
-        context.strokeStyle = this.color;
+        if (this.image) {
+            context.drawImage(this.image, this.posX, this.posY, this.width, this.height);
+        } else {
+            context.strokeStyle = this.color;
+            context.rect(this.posX, this.posY, this.width, this.height);
+            context.stroke();
+        }
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.font = "20px Arial";
         context.fillText(this.text, this.posX + this.width / 2, this.posY + this.height / 2);
-        context.lineWidth = 2;
-        context.rect(this.posX, this.posY, this.width, this.height);
-        context.stroke();
         context.closePath();
     }
 
@@ -57,21 +60,40 @@ let rectangles = [];
 const rectangleWidth = 100;  // Ancho fijo de los rectángulos
 const rectangleHeight = 50;  // Altura fija de los rectángulos
 
-for (let i = 0; i < 6; i++) {
-    const randomY = Math.random() * (canvas.height / 4);  // Generar en el cuarto superior del canvas
-    const direction = i % 2 === 0 ? 1 : -1;  // Alternar direcciones
-    const randomX = direction === 1 ? -rectangleWidth : canvas.width;
-
-    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), direction * (Math.random() * 2 + 1)));
-}
-
 // Cargar la imagen de fondo
 const backgroundImage = new Image();
 backgroundImage.src = "assets/img/fondo.png";
 
-backgroundImage.onload = function() {
-    updateRectangles();
+// Cargar las imágenes para los rectángulos
+const leftToRightImage = new Image();
+leftToRightImage.src = "assets/img/duck1.png";
+
+const rightToLeftImage = new Image();
+rightToLeftImage.src = "assets/img/duck2.png";
+
+// Esperar a que las imágenes se carguen antes de iniciar la animación
+let imagesLoaded = 0;
+backgroundImage.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === 3) updateRectangles();
 };
+leftToRightImage.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === 3) updateRectangles();
+};
+rightToLeftImage.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === 3) updateRectangles();
+};
+
+for (let i = 0; i < 6; i++) {
+    const randomY = Math.random() * (canvas.height / 4);  // Generar en el cuarto superior del canvas
+    const direction = i % 2 === 0 ? 1 : -1;  // Alternar direcciones
+    const randomX = direction === 1 ? -rectangleWidth : canvas.width;
+    const image = direction === 1 ? leftToRightImage : rightToLeftImage;
+
+    rectangles.push(new Rectangle(randomX, randomY, rectangleWidth, rectangleHeight, "blue", (i + 1).toString(), direction * (Math.random() * 2 + 1), image));
+}
 
 function updateRectangles() {
     requestAnimationFrame(updateRectangles);
