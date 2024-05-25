@@ -260,6 +260,10 @@ function drawLives() {
     ctx.fillText("Lives: " + lives, scorePanelX + scorePanelWidth / 2, scorePanelY + scorePanelHeight / 2);
 }
 
+function restartGame(){
+    window.location.reload(); // Recargar la página
+}
+
 function checkGameOver() {
     if (lives <= 0) {
         // Detener la animación
@@ -274,16 +278,12 @@ function checkGameOver() {
         ctx.font = "40px Arial";
         ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
 
-        // Mostrar el botón "Play again"
-        const playAgainBtn = document.getElementById("playAgainBtn");
-        playAgainBtn.style.display = "block";
-        playAgainBtn.style.left = `${canvas.offsetLeft + canvas.width / 2 - playAgainBtn.offsetWidth / 2}px`;
-        playAgainBtn.style.top = `${canvas.offsetTop + canvas.height - playAgainBtn.offsetHeight - 20}px`; // 20px de margen inferior
-
-        // Agregar evento click al botón para recargar la página
-        playAgainBtn.addEventListener("click", () => {
-            location.reload(); // Recargar la página
-        });
+        // Mostrar el botón de reiniciar
+        const restartBtn = document.getElementById("restartBtn");
+        restartBtn.style.display = "block";
+        restartBtn.style.position = "absolute";
+        restartBtn.style.left = `${canvas.width / 2 - restartBtn.offsetWidth / 2}px`;
+        restartBtn.style.top = `${canvas.height - restartBtn.offsetHeight}px`;
     }
 }
 
